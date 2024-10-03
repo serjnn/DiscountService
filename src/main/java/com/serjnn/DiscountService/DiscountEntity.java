@@ -1,16 +1,16 @@
 package com.serjnn.DiscountService;
 
-import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @NoArgsConstructor
-@Entity
+
 @Table(name = "discount_entity")
 public class DiscountEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     Long productId;

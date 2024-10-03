@@ -1,9 +1,9 @@
 package com.serjnn.DiscountService;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
-public interface DiscountRepository extends JpaRepository
-<DiscountEntity,Long> {
+public interface DiscountRepository extends ReactiveCrudRepository
+        <DiscountEntity, Long> {
 
 
 }

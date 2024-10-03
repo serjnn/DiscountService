@@ -3,6 +3,8 @@ package com.serjnn.DiscountService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -15,12 +17,12 @@ public class DiscountController {
 
 
     @GetMapping
-    List<DiscountEntity> getAll(){
+    Flux<DiscountEntity> getAll(){
         return discountRepository.findAll();
     }
 
     @PostMapping("/add")
-    void add(@RequestBody DiscountEntity discountEntity){
-        discountRepository.save(discountEntity);
+    Mono<Void> add(@RequestBody DiscountEntity discountEntity){
+        return discountRepository.save(discountEntity).then();
     }
 }
