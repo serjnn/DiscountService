@@ -1,24 +1,21 @@
 package com.serjnn.DiscountService;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-
 @Table(name = "discount_entity")
 public class DiscountEntity {
     @Id
     private long id;
 
-    Long productId;
+    private Long productId;
 
-    double discount;
+    private double discount;
 
-    public DiscountEntity(Long productId, double discount) {
-        this.productId = productId;
-        this.discount = discount;
-    }
 }
