@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
@@ -11,11 +12,13 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @Table(name = "discount_entity")
 public class DiscountEntity {
-    @Id
-    private long id;
 
+    @Id
+    private Long id;
+
+    @Column("product_id")
     private Long productId;
 
-    private double discount;
+    private Double discount;
 
 }
