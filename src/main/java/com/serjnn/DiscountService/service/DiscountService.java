@@ -1,6 +1,10 @@
-package com.serjnn.DiscountService;
+package com.serjnn.DiscountService.service;
 
 
+import com.serjnn.DiscountService.dto.DiscountDto;
+import com.serjnn.DiscountService.kafka.KafkaSender;
+import com.serjnn.DiscountService.model.DiscountEntity;
+import com.serjnn.DiscountService.repositoty.DiscountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -10,7 +14,7 @@ import reactor.core.publisher.Mono;
 public class DiscountService {
 
     private final DiscountRepository discountRepository;
-
+    private final KafkaSender kafkaSender;
 
     private Mono<Void> save(DiscountEntity discountEntity) {
         return discountRepository.save(discountEntity).then();
@@ -22,7 +26,11 @@ public class DiscountService {
                 .flatMap(existingDiscountEntity -> {
                     double newDiscount = discountEntity.getDiscount();
                     if (Double.compare(existingDiscountEntity.getDiscount(), newDiscount) < 0) {
-                        notifyProductService(discountEntity);
+
+                        sendDiscountTidings(new DiscountDto(
+                                discountEntity.getProductId(),
+                                discountEntity.getDiscount())
+                        );
                     }
                     existingDiscountEntity.setDiscount(newDiscount);
                     //then() operator ignores previous result and returns what its argument, so here if we dont use it
@@ -34,8 +42,11 @@ public class DiscountService {
                 .flatMap(this::save);
     }
 
-    private void notifyProductService(DiscountEntity discountEntity) {
-        //TODO
+    private void sendDiscountTidings(DiscountDto discountDto) {
+        System.out.println("jjjj");
+         kafkaSender.sendNewDiscount("newDiscountTopic",discountDto);
+
     }
+
 
 }

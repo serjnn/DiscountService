@@ -1,6 +1,9 @@
-package com.serjnn.DiscountService;
+package com.serjnn.DiscountService.contoller;
 
 
+import com.serjnn.DiscountService.service.DiscountService;
+import com.serjnn.DiscountService.model.DiscountEntity;
+import com.serjnn.DiscountService.repositoty.DiscountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
