@@ -7,7 +7,10 @@ import com.serjnn.DiscountService.model.DiscountEntity;
 import com.serjnn.DiscountService.repositoty.DiscountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,30 +24,30 @@ public class DiscountService {
 
     }
 
-    public Mono<Void> addDiscount(DiscountEntity discountEntity) {
-        return discountRepository.findByProductId(discountEntity.getProductId())
-                .flatMap(existingDiscountEntity -> {
-                    double newDiscount = discountEntity.getDiscount();
-                    if (Double.compare(existingDiscountEntity.getDiscount(), newDiscount) < 0) {
+    public Mono<Void> addDiscounts(List<DiscountEntity> discountEntities) {
+        return Flux.fromIterable(discountEntities)
+                .flatMap(discountEntity ->
+                        discountRepository.findByProductId(discountEntity.getProductId()) //place here 1 more bracket
+                                .flatMap(existingDiscountEntity -> {
+                                    double newDiscount = discountEntity.getDiscount();
+                                    if (Double.compare(existingDiscountEntity.getDiscount(), newDiscount) < 0) {
+                                        sendDiscountTidings(discountEntity);
+                                    }
 
-                        sendDiscountTidings(new DiscountDto(
-                                discountEntity.getProductId(),
-                                discountEntity.getDiscount())
-                        );
-                    }
-                    existingDiscountEntity.setDiscount(newDiscount);
-                    //then() operator ignores previous result and returns what its argument, so here if we dont use it
-                    // with Mono.just(existingDiscountEntity) as argument, switchIfEmpty operator will receive
-                    // Mono<Void> from  save(existingDiscountEntity) but not Mono.just(existingDiscountEntity)
-                    return save(existingDiscountEntity).then(Mono.just(existingDiscountEntity));
-                })
-                .switchIfEmpty(Mono.defer(() -> save(discountEntity).then(Mono.just(discountEntity))))
-                .flatMap(this::save);
+                                    existingDiscountEntity.setDiscount(newDiscount);
+                                    return save(existingDiscountEntity).then(Mono.just(existingDiscountEntity));
+                                })
+                                .switchIfEmpty(Mono.defer(() -> save(discountEntity).then(Mono.just(discountEntity))))
+                                .flatMap(newDiscountEntity -> {
+                                    sendDiscountTidings(newDiscountEntity);
+                                    return save(newDiscountEntity);
+                                }))
+                .then();
     }
 
-    private void sendDiscountTidings(DiscountDto discountDto) {
-        System.out.println("jjjj");
-         kafkaSender.sendNewDiscount("newDiscountTopic",discountDto);
+    private void sendDiscountTidings(DiscountEntity discountEntity) {
+        DiscountDto discountDto = new DiscountDto(discountEntity.getProductId(), discountEntity.getDiscount());
+        kafkaSender.sendNewDiscount("newDiscountTopic", discountDto);
 
     }
 

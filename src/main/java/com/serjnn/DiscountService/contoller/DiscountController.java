@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +26,8 @@ public class DiscountController {
     }
 
     @PostMapping("/add")
-    Mono<Void> add(@RequestBody DiscountEntity discountEntity){
-        return discountService.addDiscount(discountEntity);
+    Mono<Void> add(@RequestBody List<DiscountEntity> discountEntities){
+        System.out.println(discountEntities);
+        return discountService.addDiscounts(discountEntities);
     }
 }
