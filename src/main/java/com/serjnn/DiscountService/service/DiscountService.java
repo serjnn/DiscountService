@@ -1,7 +1,7 @@
 package com.serjnn.DiscountService.service;
 
 
-import com.serjnn.DiscountService.dto.DiscountDto;
+import com.serjnn.DiscountService.dto.DiscountChangesDto;
 import com.serjnn.DiscountService.kafka.KafkaSender;
 import com.serjnn.DiscountService.model.DiscountEntity;
 import com.serjnn.DiscountService.repositoty.DiscountRepository;
@@ -30,24 +30,31 @@ public class DiscountService {
                         discountRepository.findByProductId(discountEntity.getProductId()) //place here 1 more bracket
                                 .flatMap(existingDiscountEntity -> {
                                     double newDiscount = discountEntity.getDiscount();
-                                    if (Double.compare(existingDiscountEntity.getDiscount(), newDiscount) < 0) {
-                                        sendDiscountTidings(discountEntity);
-                                    }
+                                    double prevDiscount = existingDiscountEntity.getDiscount();
+
+                                    sendDiscountChanges(new DiscountChangesDto(discountEntity.getProductId()
+                                            , newDiscount
+                                            , prevDiscount));
+
 
                                     existingDiscountEntity.setDiscount(newDiscount);
                                     return save(existingDiscountEntity).then(Mono.just(existingDiscountEntity));
                                 })
                                 .switchIfEmpty(Mono.defer(() -> save(discountEntity).then(Mono.just(discountEntity))))
                                 .flatMap(newDiscountEntity -> {
-                                    sendDiscountTidings(newDiscountEntity);
+                                    sendDiscountChanges(
+                                            new DiscountChangesDto(
+                                                    newDiscountEntity.getProductId(),
+                                                    newDiscountEntity.getDiscount()
+                                            )
+                                    );
                                     return save(newDiscountEntity);
                                 }))
                 .then();
     }
 
-    private void sendDiscountTidings(DiscountEntity discountEntity) {
-        DiscountDto discountDto = new DiscountDto(discountEntity.getProductId(), discountEntity.getDiscount());
-        kafkaSender.sendNewDiscount("newDiscountTopic", discountDto);
+    private void sendDiscountChanges(DiscountChangesDto discountTidingDto) {
+        kafkaSender.sendNewDiscount("discountChangesTopic", discountTidingDto);
 
     }
 
