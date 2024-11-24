@@ -1,6 +1,6 @@
 package com.serjnn.DiscountService.kafka;
 
-import com.serjnn.DiscountService.dto.DiscountDto;
+import com.serjnn.DiscountService.dto.DiscountChangesDto;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -21,7 +21,7 @@ public class KafkaProducerConfiguration {
 
     @Bean
     public NewTopic newDiscountTopic() {
-        return TopicBuilder.name("newDiscountTopic").
+        return TopicBuilder.name("discountChangesTopic").
                 partitions(3).
                 build();
     }
@@ -31,7 +31,7 @@ public class KafkaProducerConfiguration {
     private String bootstrapServers;
 
     @Bean
-    public ProducerFactory<String, DiscountDto> producerFactory() {
+    public ProducerFactory<String, DiscountChangesDto> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -41,7 +41,7 @@ public class KafkaProducerConfiguration {
     }
 
     @Bean
-    public KafkaTemplate<String, DiscountDto> kafkaTemplate() {
+    public KafkaTemplate<String, DiscountChangesDto> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }
