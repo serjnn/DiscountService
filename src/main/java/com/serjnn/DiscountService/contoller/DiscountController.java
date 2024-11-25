@@ -1,9 +1,9 @@
 package com.serjnn.DiscountService.contoller;
 
 
-import com.serjnn.DiscountService.service.DiscountService;
 import com.serjnn.DiscountService.model.DiscountEntity;
 import com.serjnn.DiscountService.repositoty.DiscountRepository;
+import com.serjnn.DiscountService.service.DiscountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -21,13 +21,19 @@ public class DiscountController {
     private final DiscountService discountService;
 
     @GetMapping("/all")
-    Flux<DiscountEntity> getAll(){
+    Flux<DiscountEntity> getAll() {
         return discountRepository.findAll();
     }
 
     @PostMapping("/add")
-    Mono<Void> add(@RequestBody List<DiscountEntity> discountEntities){
+    Mono<Void> add(@RequestBody List<DiscountEntity> discountEntities) {
         System.out.println(discountEntities);
         return discountService.addDiscounts(discountEntities);
+    }
+
+    @GetMapping("/byProductId/{productId}")
+    Mono<DiscountEntity> byProductId(@PathVariable("productId") Long productId) {
+        System.out.println("DASDSADASDASd");
+        return discountService.findByProductId(productId);
     }
 }
