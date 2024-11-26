@@ -58,5 +58,7 @@ public class DiscountService {
 
     }
 
-
+    public Mono<DiscountEntity> findByProductId(Long productId) {
+        return discountRepository.findByProductId(productId);
+    }
 }
