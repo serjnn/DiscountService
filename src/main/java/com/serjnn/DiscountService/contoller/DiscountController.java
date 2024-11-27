@@ -17,7 +17,6 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class DiscountController {
     private final DiscountRepository discountRepository;
-
     private final DiscountService discountService;
 
     @GetMapping("/all")
@@ -33,7 +32,6 @@ public class DiscountController {
 
     @GetMapping("/byProductId/{productId}")
     Mono<DiscountEntity> byProductId(@PathVariable("productId") Long productId) {
-        System.out.println("DASDSADASDASd");
         return discountService.findByProductId(productId);
     }
 }
