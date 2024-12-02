@@ -7,8 +7,7 @@ import reactor.core.publisher.Mono;
 public interface DiscountRepository extends ReactiveCrudRepository
         <DiscountEntity, Long> {
 
-
-    Mono<DiscountEntity> findByProductId(Long productId);
+    Mono<DiscountEntity> findByProductId(long productId);
 
 
 }
