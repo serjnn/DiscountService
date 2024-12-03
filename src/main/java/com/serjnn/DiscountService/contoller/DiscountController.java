@@ -31,7 +31,7 @@ public class DiscountController {
     }
 
     @GetMapping("/byProductId/{productId}")
-    Mono<DiscountEntity> byProductId(@PathVariable("productId") Long productId) {
+    Mono<DiscountEntity> byProductId(@PathVariable("productId") long productId) {
         return discountService.findByProductId(productId);
     }
 }

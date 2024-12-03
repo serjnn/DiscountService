@@ -10,13 +10,6 @@ spring:
     name: discount
 
 
-eureka:
-  instance:
-    prefer-ip-address: true
-    hostname: localhost
-    ip-address: 127.0.0.1
-    instance-id: ${spring.application.name}:${server.port}
-
 server:
   port: 7005
 

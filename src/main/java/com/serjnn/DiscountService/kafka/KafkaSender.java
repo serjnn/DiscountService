@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 public class KafkaSender {
     private final KafkaTemplate<String, DiscountChangesDto> kafkaTemplate;
 
-
     public void sendNewDiscount(String topicName, DiscountChangesDto discountChangesDto) {
         System.out.println("sending " + discountChangesDto);
         kafkaTemplate.send(topicName, discountChangesDto);

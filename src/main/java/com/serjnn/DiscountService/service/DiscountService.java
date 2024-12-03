@@ -21,13 +21,12 @@ public class DiscountService {
 
     private Mono<Void> save(DiscountEntity discountEntity) {
         return discountRepository.save(discountEntity).then();
-
     }
 
     public Mono<Void> addDiscounts(List<DiscountEntity> discountEntities) {
         return Flux.fromIterable(discountEntities)
                 .flatMap(discountEntity ->
-                        discountRepository.findByProductId(discountEntity.getProductId()) //place here 1 more bracket
+                        discountRepository.findByProductId(discountEntity.getProductId())
                                 .flatMap(existingDiscountEntity -> {
                                     double newDiscount = discountEntity.getDiscount();
                                     double prevDiscount = existingDiscountEntity.getDiscount();
@@ -35,7 +34,6 @@ public class DiscountService {
                                             discountEntity.getProductId(),
                                             newDiscount,
                                             prevDiscount));
-
 
                                     existingDiscountEntity.setDiscount(newDiscount);
                                     return save(existingDiscountEntity).then(Mono.just(existingDiscountEntity));
@@ -60,7 +58,7 @@ public class DiscountService {
 
     }
 
-    public Mono<DiscountEntity> findByProductId(Long productId) {
+    public Mono<DiscountEntity> findByProductId(long productId) {
         return discountRepository.findByProductId(productId);
     }
 }
